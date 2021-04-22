@@ -52,7 +52,11 @@ class DQNAgent(object):
             TODO: epsilon greedy takes a random action with probability eps.
             Set the perform_random_action variable appropriately.
             """
-            perform_random_action = None 
+            if np.random.uniform(0,1) < eps:
+                perform_random_action = True
+            else:
+                perform_random_action = False
+                
             """
             END CODE
             """
@@ -60,7 +64,7 @@ class DQNAgent(object):
             """
             TODO: take a random action if perform_random_action is True
             """
-            action = None 
+            action = self.env.action_space.sample()
             """
             END CODE
             """
@@ -71,7 +75,7 @@ class DQNAgent(object):
             """
             TODO: otherwise, take the action accoding to the argmax policy
             """
-            action = None 
+            action = self.actor.get_action(processed_obs)
             """
             END CODE
             """

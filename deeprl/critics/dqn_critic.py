@@ -73,6 +73,14 @@ class DQNCritic(BaseCritic):
             https://arxiv.org/pdf/1509.06461.pdf for more details.
             """
             # your code here
+            q_next = self.q_net(next_ob_no)
+            ac_ind = torch.max(q_next, dim=-1).indices
+            next_values = self.q_net_target(next_ob_no)
+            next_values *= torch.stack(self.ac_dim * [1-terminal_n]).T
+            maxed_values = torch.Tensor( [next_values[i][ac_ind[i]] for i in range(len(terminal_n))] )
+            
+            
+            
             """
             END CODE
             """
@@ -80,7 +88,12 @@ class DQNCritic(BaseCritic):
             """
             TODO: compute the value of of the next state
             """
+            
             # your code here
+            next_values = self.q_net_target(next_ob_no)
+            next_values *= torch.stack(self.ac_dim * [1- terminal_n]).T
+            maxed_values = torch.max(next_values, dim=-1).values
+        
             """
             END CODE
             """
@@ -90,7 +103,7 @@ class DQNCritic(BaseCritic):
         are passed through the target values.
         Hint: Use torch.no_grad or .detach() to ensure no gradients are passed.
         """
-        target = None
+        target = (self.gamma * maxed_values + reward_n).detach()
         """
         END CODE
         """
