@@ -74,7 +74,13 @@ class BootstrappedContinuousCritic(nn.Module, BaseCritic):
         HINT: make sure to squeeze the output of the critic_network to ensure
               that its dimensions match the reward
         """
-        target_value = None
+        #get a sample from actor
+        sampled_action = actor(next_obs).sample()
+        
+        q_values = self.forward(next_obs, sampled_action)
+
+        target_value = q_values * self.gamma * (1-terminals) + rewards
+        
         """
         END CODE
         """
@@ -87,6 +93,9 @@ class BootstrappedContinuousCritic(nn.Module, BaseCritic):
         where alpha is self.target_update_rate.
         """
         # your code here
+        for p, target_p in zip(self.critic_network.parameters(), self.target_network.parameters()):
+            target_p.data = (1 - self.target_update_rate) * target_p.data + self.target_update_rate * p.data
+
         """
         END CODE
         """
